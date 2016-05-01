@@ -56,7 +56,7 @@ function Model() {
 		if(model.markers != null) {
 			model.deleteCookies();
 			model.markers.forEach(function(element,index,array) {
-				Cookies.set(index,element);
+				Cookies.set("marker-"+index,element);
 			});
 		}
 	}
@@ -65,7 +65,7 @@ function Model() {
 	this.deleteCookies = function() {
 		if (init) { // If we haven't initialized yet, we don't clear the cache
 			Object.getOwnPropertyNames(Cookies.getJSON()).forEach(function(element,index,array) {
-				if (element != "pnctest")
+				if (element.indexOf("marker-") >= 0 && element != "pnctest")
 					Cookies.remove(element);
 			});
 		}
@@ -73,10 +73,10 @@ function Model() {
 
 	/* LOAD COOKIES MARKERS */
 	this.loadCookies = function() {
-		if (Object.getOwnPropertyNames(Cookies.getJSON()).length!=1) {
+		if (Cookies.getJSON().hasOwnProperty("marker-0")) {
 			model.markers = [];
 			Object.getOwnPropertyNames(Cookies.getJSON()).forEach(function(element,index,array) {
-				if (element != "pnctest")
+				if (element.indexOf("marker-") >= 0 && element != "pnctest")
 					model.markers.push(Cookies.getJSON(element));
 			});
 		}
