@@ -1,7 +1,10 @@
 function Model() {
 	this.map = [];
 	this.posMarker = [];
-	this.markers = [];
+	this.markers = [
+	{text:"Estelle",pos:{lat:59.333357, lng:18.057294},description:"Wayne's Coffee",type:1},
+	{text:"Céline",pos:{lat:59.342290, lng:18.051862},description:"Café Pascal",type:0}
+	];
 
 	/* INIT THE MAP */
 	this.initMap = function(mapDiv,mapOptions) {
@@ -48,8 +51,40 @@ function Model() {
 		this.notifyObservers();
 	}
 
+	/* SAVE MARKER LIST INTO COOKIES */
+	this.saveCookies = function() {
+		if(model.markers != null) {
+			model.deleteCookies();
+			model.markers.forEach(function(element,index,array) {
+				Cookies.set(index,element);
+			});
+		}
+	}
+
+	/* DELETE COOKIES */
+	this.deleteCookies = function() {
+		if (init) { // If we haven't initialized yet, we don't clear the cache
+			Object.getOwnPropertyNames(Cookies.getJSON()).forEach(function(element,index,array) {
+				if (element != "pnctest")
+					Cookies.remove(element);
+			});
+		}
+	}
+
+	/* LOAD COOKIES MARKERS */
+	this.loadCookies = function() {
+		if (Object.getOwnPropertyNames(Cookies.getJSON()).length!=1) {
+			model.markers = [];
+			Object.getOwnPropertyNames(Cookies.getJSON()).forEach(function(element,index,array) {
+				if (element != "pnctest")
+					model.markers.push(Cookies.getJSON(element));
+			});
+		}
+		init = true;
+	}
+
 	//*** OBSERVABLE PATTERN ***
-	var listeners = [];
+	var listeners = [this.saveCookies];
 	
 	this.notifyObservers = function (args) {
 		for (var i = 0; i < listeners.length; i++){
